@@ -1,1 +1,181 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phantom Forge Robux Calculator</title>
+  <style>
+    /* Algemeen reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-image: url('https://i.postimg.cc/zvsvYJGs/Schermafbeelding-2025-10-05-022559.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #a020f0;
+      font-family: "Segoe UI", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 50px 20px; 
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 80px; /* schuift alles naar beneden */
+    }
+
+    h1 {
+      font-size: 2.5em;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+      text-shadow: 1px 1px 5px black;
+    }
+
+    label {
+      font-size: 1.2em;
+      margin-top: 10px;
+      text-shadow: 1px 1px 3px black;
+    }
+
+    input[type="number"] {
+      background-color: rgba(160,32,240,0.8);
+      color: black;
+      font-size: 1.2em;
+      border: none;
+      padding: 10px;
+      margin-top: 5px;
+      width: 100%;
+      max-width: 250px;
+      border-radius: 5px;
+    }
+
+    .results {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      width: 100%;
+    }
+
+    .result-card {
+      background-color: rgba(0,0,0,0.7);
+      border: 2px solid #a020f0;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.2em;
+    }
+
+    .full-width-card {
+      grid-column: 1 / -1; /* neemt volledige breedte van de grid */
+      justify-content: center;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2em; }
+      .result-card { font-size: 1em; }
+      input[type="number"] { font-size: 1em; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Phantom Forge Robux Calculator</h1>
+
+    <label for="robuxInput">Enter ammount (Robux):</label>
+    <input type="number" id="robuxInput" placeholder="Bijv. 1000">
+
+    <div class="results">
+      <div class="result-card">Robux (no fee incl.): <span id="robuxNoFee">-</span></div>
+      <div class="result-card">Robux (fee incl.): <span id="robuxFee">-</span></div>
+      <div class="result-card">Roblox price (no fee incl.): <span id="priceNoFee">-</span></div>
+      <div class="result-card">Roblox price (fee incl.): <span id="priceFee">-</span></div>
+      <div class="result-card">Phantom Forge (no fee incl.): <span id="forgeNoFee">-</span></div>
+      <div class="result-card">Phantom Forge (fee incl.): <span id="forgeFee">-</span></div>
+      <!-- Nieuwe kaart onderaan -->
+      <div class="result-card full-width-card">Fee incl. Robux: <span id="feeInclRobux">-</span></div>
+    </div>
+  </div>
+
+  <script>
+    const robuxInput = document.getElementById("robuxInput");
+    const robuxNoFeeEl = document.getElementById("robuxNoFee");
+    const robuxFeeEl = document.getElementById("robuxFee");
+    const priceNoFeeEl = document.getElementById("priceNoFee");
+    const priceFeeEl = document.getElementById("priceFee");
+    const forgeNoFeeEl = document.getElementById("forgeNoFee");
+    const forgeFeeEl = document.getElementById("forgeFee");
+    const feeInclRobuxEl = document.getElementById("feeInclRobux");
+
+    const robuxPrices = {400:4.99, 800:9.99, 1700:20.99, 4500:49.99, 10000:99.99};
+    const feePercentage = 30;
+
+    function robuxInEuro(robux) {
+      const totalRobux = Object.keys(robuxPrices).reduce((a,b) => a + parseInt(b), 0);
+      const totalPrice = Object.values(robuxPrices).reduce((a,b) => a + b, 0);
+      const euroPerRobux = totalPrice / totalRobux;
+      return robux * euroPerRobux;
+    }
+
+    function ceil2(value) {
+      return Math.ceil(value * 100) / 100;
+    }
+
+    function calculate() {
+      const invoer = parseFloat(robuxInput.value);
+      if (isNaN(invoer)) {
+        robuxNoFeeEl.textContent = "-";
+        robuxFeeEl.textContent = "-";
+        priceNoFeeEl.textContent = "-";
+        priceFeeEl.textContent = "-";
+        forgeNoFeeEl.textContent = "-";
+        forgeFeeEl.textContent = "-";
+        feeInclRobuxEl.textContent = "-";
+        return;
+      }
+
+      const robuxFeeIncl = Math.floor(invoer);
+      const robuxNoFee = Math.floor(invoer * (1 - feePercentage/100));
+
+      const prijsFee = ceil2(robuxInEuro(robuxFeeIncl));
+      const prijsNoFee = ceil2(robuxInEuro(robuxNoFee));
+
+      const forgeNoFee = ceil2(invoer * (50/10000));
+      const forgeFee = ceil2(invoer * (70/10000));
+
+      // Bereken fee incl. robux
+      const feeInclRobux = Math.ceil(invoer / (1 - feePercentage/100));
+
+      robuxNoFeeEl.textContent = robuxNoFee + " Robux";
+      robuxFeeEl.textContent = robuxFeeIncl + " Robux";
+      priceNoFeeEl.textContent = "€" + prijsNoFee.toFixed(2);
+      priceFeeEl.textContent = "€" + prijsFee.toFixed(2);
+      forgeNoFeeEl.textContent = "€" + forgeNoFee.toFixed(2);
+      forgeFeeEl.textContent = "€" + forgeFee.toFixed(2);
+      feeInclRobuxEl.textContent = feeInclRobux + " Robux";
+    }
+
+    robuxInput.addEventListener("input", calculate);
+  </script>
+
+</body>
+</html>
+
 
