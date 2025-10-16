@@ -117,15 +117,9 @@ function calculate() {
   const prijsFee = ceil2(robuxInEuro(robuxFeeIncl));
   const prijsNoFee = ceil2(robuxInEuro(robuxNoFee));
 
-  // Phantom Forge prijzen hardcoded voor 10K Robux
-  let forgeNoFee, forgeFee;
-  if (invoer === 10000) {
-    forgeNoFee = 55;
-    forgeFee = 77;
-  } else {
-    forgeNoFee = ceil2(invoer * (50/10000));
-    forgeFee = ceil2(invoer * (70/10000));
-  }
+  // Phantom Forge prijzen verhoogd met 10% voor alle invoerwaarden
+  const forgeNoFee = ceil2(invoer * (50/10000) * 1.1);
+  const forgeFee = ceil2(invoer * (70/10000) * 1.1);
 
   const feeInclRobux = Math.ceil(invoer / (1 - feePercentage/100));
 
