@@ -25,7 +25,7 @@
       justify-content: flex-start;
       min-height: 100vh;
       overflow-x: hidden;
-      padding: 50px 20px; 
+      padding: 50px 20px; /* extra ruimte boven en onder */
     }
 
     .container {
@@ -99,7 +99,7 @@
   <div class="container">
     <h1>Phantom Forge Robux Calculator</h1>
 
-    <label for="robuxInput">Enter ammount (Robux):</label>
+    <label for="robuxInput">Enter amount (Robux):</label>
     <input type="number" id="robuxInput" placeholder="Bijv. 1000">
 
     <div class="results">
@@ -157,8 +157,9 @@
       const prijsFee = ceil2(robuxInEuro(robuxFeeIncl));
       const prijsNoFee = ceil2(robuxInEuro(robuxNoFee));
 
-      const forgeNoFee = ceil2(invoer * (50/10000));
-      const forgeFee = ceil2(invoer * (70/10000));
+      // Phantom Forge prijzen +10%
+      const forgeNoFee = ceil2(invoer * (50/10000) * 1.1);
+      const forgeFee = ceil2(invoer * (70/10000) * 1.1);
 
       // Bereken fee incl. robux
       const feeInclRobux = Math.ceil(invoer / (1 - feePercentage/100));
@@ -177,5 +178,3 @@
 
 </body>
 </html>
-
-
